@@ -1,0 +1,39 @@
+{
+  "board": {
+    "3dviewports": [],
+    "design_settings": {
+      "defaults": {
+        "board_outline_line_width": 0.15,
+        "copper_line_width": 0.25,
+        "copper_text_size_h": 1.0,
+        "copper_text_size_v": 1.0,
+        "copper_text_thickness": 0.18,
+        "silk_line_width": 0.15,
+        "silk_text_size_h": 1.0,
+        "silk_text_size_v": 1.0,
+        "silk_text_thickness": 0.15
+      },
+      "rules": {
+        "min_clearance": 0.15,
+        "min_track_width": 0.2,
+        "min_via_annular_width": 0.15,
+        "min_via_diameter": 0.85,
+        "min_through_hole_diameter": 0.5
+      }
+    }
+  },
+  "meta": {
+    "filename": "main_board_pcb.kicad_pro",
+    "version": 1
+  },
+  "schematic": {
+    "drawing": {
+      "default_line_thickness": 6.0,
+      "default_text_size": 50.0,
+      "pin_symbol_size": 25.0
+    },
+    "meta": {
+      "version": 1
+    }
+  }
+}

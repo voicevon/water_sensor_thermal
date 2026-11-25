@@ -9,7 +9,7 @@
 
 #define SENSOR_COUNT    3
 
-// -------- 热式传感器硬件引脚定义（与 sensor_design/main_board_schematic.md 一致） --------
+// -------- 热式传感器硬件引脚定义（与 docs/main_board_schematic.md 一致） --------
 // 3 路独立 1-Wire 18B20 数据线（CH1 碳源, CH2 次氯酸钠, CH3 聚合氯化铁）
 #define THERMAL_DQ_1_PIN    25
 #define THERMAL_DQ_2_PIN    26

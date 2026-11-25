@@ -1,0 +1,181 @@
+(kicad_pcb (version 20221018) (generator probe_mini_pcb_sop8_v3)
+
+  (general
+    (thickness 0.8)
+  )
+
+  (paper "A4")
+  (layers
+    (0 "F.Cu" signal)
+    (31 "B.Cu" signal)
+    (32 "B.Adhes" user "B.Adhesive")
+    (33 "F.Adhes" user "F.Adhesive")
+    (34 "B.Paste" user)
+    (35 "F.Paste" user)
+    (36 "B.SilkS" user "B.Silkscreen")
+    (37 "F.SilkS" user "F.Silkscreen")
+    (38 "B.Mask" user)
+    (39 "F.Mask" user)
+    (44 "Edge.Cuts" user)
+    (46 "B.CrtYd" user "B.Courtyard")
+    (47 "F.CrtYd" user "F.Courtyard")
+    (48 "B.Fab" user)
+    (49 "F.Fab" user)
+  )
+
+  (setup
+    (pad_to_mask_clearance 0.05)
+  )
+
+  (net 0 "")
+  (net 1 "HEAT_5V")
+  (net 2 "VDD_3V3")
+  (net 3 "DQ")
+  (net 4 "GND")
+
+  ;; ==================== Board Outline (Edge.Cuts: 5.00 x 15.50 mm, 0.8mm thick) ====================
+  (gr_rect (start 100.00 100.00) (end 105.00 115.50)
+    (stroke (width 0.10) (type solid)) (fill none) (layer "Edge.Cuts") (tstamp 80b669f1-e6e9-4bc7-ad0d-ccda48bee94b))
+
+  ;; ==================== Top Wire Solder Pads (F.Cu) ====================
+  (footprint "Probe:WirePad_1.6x1.6" (layer "F.Cu")
+    (tstamp 2a82174d-e830-4aa9-8b66-7dbe176751a4)
+    (at 101.25 101.25)
+    (fp_text reference "J_H" (at 0 -1.25) (layer "F.SilkS") (effects (font (size 0.55 0.55) (thickness 0.12))) (tstamp 1501ce4c-86c2-435e-923e-fb7cf0d65e5e))
+    (fp_text value "H+" (at 0 1.25) (layer "F.Fab") (effects (font (size 0.55 0.55) (thickness 0.12))) (tstamp a4cf0096-e854-456e-8c30-2f2fb4cb8488))
+    (pad "1" smd rect (at 0 0) (size 1.60 1.60) (layers "F.Cu" "F.Paste" "F.Mask") (net 1 "HEAT_5V") (tstamp f6a60193-c63b-40ce-bb19-3a1dd6d2f0aa))
+  )
+
+  (footprint "Probe:WirePad_1.6x1.6" (layer "F.Cu")
+    (tstamp f6234445-3de5-408c-968e-c3c4b7d0f588)
+    (at 103.75 101.25)
+    (fp_text reference "J_3V" (at 0 -1.25) (layer "F.SilkS") (effects (font (size 0.55 0.55) (thickness 0.12))) (tstamp 30d4b9d6-4970-4d5e-8687-6ec6574b0c7e))
+    (fp_text value "3V3" (at 0 1.25) (layer "F.Fab") (effects (font (size 0.55 0.55) (thickness 0.12))) (tstamp a349ec67-de3e-45db-b70d-dcfaa9c434bd))
+    (pad "1" smd rect (at 0 0) (size 1.60 1.60) (layers "F.Cu" "F.Paste" "F.Mask") (net 2 "VDD_3V3") (tstamp 3d2967c3-1b2d-4081-ad62-d0c671f78c50))
+  )
+
+  ;; ==================== Bottom Wire Solder Pads (B.Cu: GND left, DQ right) ====================
+  (footprint "Probe:WirePad_1.6x1.6" (layer "B.Cu")
+    (tstamp eff1c12b-ac5e-4d5a-b903-4478cc415733)
+    (at 101.25 101.25)
+    (fp_text reference "J_GND" (at 0 -1.25) (layer "B.SilkS") (effects (font (size 0.55 0.55) (thickness 0.12)) (justify mirror)) (tstamp b5b0c3ea-a8a2-4c80-93fc-f7ef5f3cc9b8))
+    (fp_text value "GND" (at 0 1.25) (layer "B.Fab") (effects (font (size 0.55 0.55) (thickness 0.12)) (justify mirror)) (tstamp cb25698e-7f21-4d4e-8898-c80c658a4333))
+    (pad "1" smd rect (at 0 0) (size 1.60 1.60) (layers "B.Cu" "B.Paste" "B.Mask") (net 4 "GND") (tstamp 810cc903-e188-4d1b-9cb2-767d4cb5b164))
+  )
+
+  (footprint "Probe:WirePad_1.6x1.6" (layer "B.Cu")
+    (tstamp 30e5f420-e873-4249-a058-d768f4aae904)
+    (at 103.75 101.25)
+    (fp_text reference "J_DQ" (at 0 -1.25) (layer "B.SilkS") (effects (font (size 0.55 0.55) (thickness 0.12)) (justify mirror)) (tstamp 90dc965f-8970-4a22-b258-ebafaac952a7))
+    (fp_text value "DQ" (at 0 1.25) (layer "B.Fab") (effects (font (size 0.55 0.55) (thickness 0.12)) (justify mirror)) (tstamp 04c503d1-6898-4d06-ba0d-162c32b6d5e2))
+    (pad "1" smd rect (at 0 0) (size 1.60 1.60) (layers "B.Cu" "B.Paste" "B.Mask") (net 3 "DQ") (tstamp 4b589367-3d20-4a8b-aef1-6f4bbd5b0e14))
+  )
+
+  ;; ==================== Top Heater Resistors (2x 33R 1206 = 16.5R, F.Cu) ====================
+  (footprint "Resistor_SMD:R_1206_3216Metric" (layer "F.Cu")
+    (tstamp bdf8d08e-8962-49c6-91c4-2ef107b99ca3)
+    (at 102.50 105.60)
+    (fp_text reference "R_H1" (at 0 -1.20) (layer "F.SilkS") (effects (font (size 0.55 0.55) (thickness 0.12))) (tstamp a7a4a8f6-37a4-44e5-af49-068b0011f99d))
+    (fp_text value "33R_0.5W" (at 0 1.20) (layer "F.Fab") (effects (font (size 0.50 0.50) (thickness 0.10))) (tstamp e4f79aaf-c066-4a1e-9a46-d417b65854c7))
+    (fp_line (start -0.75 -0.85) (end 0.75 -0.85) (stroke (width 0.12) (type solid)) (layer "F.SilkS") (tstamp ee78a455-e1c1-4bc6-ad22-b8e2c0062b09))
+    (fp_line (start -0.75 0.85) (end 0.75 0.85) (stroke (width 0.12) (type solid)) (layer "F.SilkS") (tstamp 18d28a4e-ee8a-451c-9be8-c1c073e7df68))
+    (pad "1" smd roundrect (at -1.45 0) (size 1.10 1.60) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.2) (net 1 "HEAT_5V") (tstamp 1b278892-bd39-43bb-b8ae-2918d8bd36df))
+    (pad "2" smd roundrect (at 1.45 0) (size 1.10 1.60) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.2) (net 4 "GND") (tstamp bb328ed0-581b-4005-b473-174732029513))
+  )
+
+  (footprint "Resistor_SMD:R_1206_3216Metric" (layer "F.Cu")
+    (tstamp a82b33b7-a245-4cd5-9942-0e579c4997c2)
+    (at 102.50 108.40)
+    (fp_text reference "R_H2" (at 0 -1.20) (layer "F.SilkS") (effects (font (size 0.55 0.55) (thickness 0.12))) (tstamp 04708786-5159-4b41-9357-e466ffe8803f))
+    (fp_text value "33R_0.5W" (at 0 1.20) (layer "F.Fab") (effects (font (size 0.50 0.50) (thickness 0.10))) (tstamp 2bfb6ebe-b880-414e-8d3a-9faeda08534c))
+    (fp_line (start -0.75 -0.85) (end 0.75 -0.85) (stroke (width 0.12) (type solid)) (layer "F.SilkS") (tstamp 959089cb-315b-4a32-8ad7-c84650632fa9))
+    (fp_line (start -0.75 0.85) (end 0.75 0.85) (stroke (width 0.12) (type solid)) (layer "F.SilkS") (tstamp 5e7e8fa5-f6e4-4a09-82a9-7bce35e64691))
+    (pad "1" smd roundrect (at -1.45 0) (size 1.10 1.60) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.2) (net 1 "HEAT_5V") (tstamp c0a5e3ce-9070-4f17-b7d0-6ee154922a20))
+    (pad "2" smd roundrect (at 1.45 0) (size 1.10 1.60) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.2) (net 4 "GND") (tstamp dcbf6b44-bac3-44b4-b78e-83e9b95db8cb))
+  )
+
+  ;; ==================== Bottom Decoupling Cap (100nF 0603, B.Cu) ====================
+  (footprint "Capacitor_SMD:C_0603_1608Metric" (layer "B.Cu")
+    (tstamp ef84a4c5-2e9b-4e4c-b4df-3e4701e97b16)
+    (at 102.30 105.00)
+    (fp_text reference "C1" (at 0 -0.90) (layer "B.SilkS") (effects (font (size 0.55 0.55) (thickness 0.12)) (justify mirror)) (tstamp f12ea40e-c84a-4d8a-a9ff-ee4442e70309))
+    (fp_text value "100nF" (at 0 0.90) (layer "B.Fab") (effects (font (size 0.50 0.50) (thickness 0.10)) (justify mirror)) (tstamp f337cc53-7607-45dc-aa15-0da2d8011ce4))
+    (pad "1" smd roundrect (at -0.80 0) (size 0.85 0.90) (layers "B.Cu" "B.Paste" "B.Mask") (roundrect_rratio 0.2) (net 4 "GND") (tstamp 117077b1-9c75-481b-aa5e-1f3b63509f4d))
+    (pad "2" smd roundrect (at 0.80 0) (size 0.85 0.90) (layers "B.Cu" "B.Paste" "B.Mask") (roundrect_rratio 0.2) (net 2 "VDD_3V3") (tstamp a3a4e172-4c13-48b0-b1e7-43442511f404))
+  )
+
+  ;; ==================== Bottom Narrow SOP-8 DS18B20Z (Rotated 90 deg, B.Cu) ====================
+  ;; Universal DS18B20Z SOP-8 Pinout (CCW looking at Bottom):
+  ;;   Top row (y=109.10): Pin1(NC), Pin2(NC), Pin3(VDD), Pin4(DQ)
+  ;;   Bot row (y=114.40): Pin5(GND), Pin6(NC), Pin7(NC), Pin8(NC)
+  (footprint "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm" (layer "B.Cu")
+    (tstamp e612be7c-ff3f-41fc-b049-644902b623ef)
+    (at 102.50 111.75)
+    (fp_text reference "U1" (at 0 0) (layer "B.SilkS") (effects (font (size 0.65 0.65) (thickness 0.12)) (justify mirror)) (tstamp ff7985a9-9163-4bec-8513-3df6eb1aac91))
+    (fp_text value "DS18B20Z_SOP8" (at 0 1.20) (layer "B.Fab") (effects (font (size 0.48 0.48) (thickness 0.10)) (justify mirror)) (tstamp 679751ea-fc7e-47a6-b3ed-7632d294f64e))
+    (fp_rect (start -2.35 -1.90) (end 2.35 1.90) (stroke (width 0.12) (type solid)) (fill none) (layer "B.SilkS") (tstamp ad953167-a3dd-47f3-bc9b-41033df0d184))
+    (fp_circle (center -1.85 -1.35) (end -1.65 -1.35) (stroke (width 0.18) (type solid)) (fill solid) (layer "B.SilkS") (tstamp f355a797-1bda-4a6d-a9a3-49722fcb78be))
+    (pad "1" smd roundrect (at -1.905 -2.65) (size 0.55 1.25) (layers "B.Cu" "B.Paste" "B.Mask") (roundrect_rratio 0.2) (net 0 "") (tstamp b1cba89b-254c-4081-ab92-626cb1edce33))
+    (pad "2" smd roundrect (at -0.635 -2.65) (size 0.55 1.25) (layers "B.Cu" "B.Paste" "B.Mask") (roundrect_rratio 0.2) (net 0 "") (tstamp 685a3549-6965-4cbc-a494-f032f042bea9))
+    (pad "3" smd roundrect (at  0.635 -2.65) (size 0.55 1.25) (layers "B.Cu" "B.Paste" "B.Mask") (roundrect_rratio 0.2) (net 2 "VDD_3V3") (tstamp 97780416-ecb7-4e86-b017-6e607f56a0c6))
+    (pad "4" smd roundrect (at  1.905 -2.65) (size 0.55 1.25) (layers "B.Cu" "B.Paste" "B.Mask") (roundrect_rratio 0.2) (net 3 "DQ") (tstamp 44a93d46-07d7-44d4-97f8-30d7ae4e6bb7))
+    (pad "5" smd roundrect (at  1.905  2.65) (size 0.55 1.25) (layers "B.Cu" "B.Paste" "B.Mask") (roundrect_rratio 0.2) (net 4 "GND") (tstamp d97fa59f-a962-4822-b8c9-8e44eb15c60d))
+    (pad "6" smd roundrect (at  0.635  2.65) (size 0.55 1.25) (layers "B.Cu" "B.Paste" "B.Mask") (roundrect_rratio 0.2) (net 0 "") (tstamp 19cb1493-2b9c-432a-ac0f-5c322f05336c))
+    (pad "7" smd roundrect (at -0.635  2.65) (size 0.55 1.25) (layers "B.Cu" "B.Paste" "B.Mask") (roundrect_rratio 0.2) (net 0 "") (tstamp a0b3d770-57a4-46d3-908c-58efcbc97af7))
+    (pad "8" smd roundrect (at -1.905  2.65) (size 0.55 1.25) (layers "B.Cu" "B.Paste" "B.Mask") (roundrect_rratio 0.2) (net 0 "") (tstamp 96b7f4fd-5e8b-43e9-bdc6-1418a90d3a0d))
+  )
+
+  ;; ==================== Copper Routing (All Vias: 0.50mm drill / 0.85mm pad) ====================
+  ;; Net 1: HEAT_5V (F.Cu, 0.45 mm)
+  (segment (start 101.25 101.25) (end 100.60 102.50) (width 0.45) (layer "F.Cu") (net 1) (tstamp 4bc1dba8-c825-439f-9fe4-2ed90e379976))
+  (segment (start 100.60 102.50) (end 100.60 104.70) (width 0.45) (layer "F.Cu") (net 1) (tstamp 2f522804-aa5f-4551-b666-ee471bd4b2a1))
+  (segment (start 100.60 104.70) (end 101.05 105.60) (width 0.45) (layer "F.Cu") (net 1) (tstamp 3ed37183-1ccd-4c6a-977f-aebb866ecc30))
+  (segment (start 101.05 105.60) (end 101.05 108.40) (width 0.45) (layer "F.Cu") (net 1) (tstamp d7e960fe-407b-4f6f-993c-1c3f5bc657c7))
+
+  ;; Net 2: VDD_3V3 (F.Cu -> Via -> B.Cu -> C1.2 -> U1.3, 0.30 mm)
+  (segment (start 103.75 101.25) (end 103.05 103.10) (width 0.30) (layer "F.Cu") (net 2) (tstamp c68230d8-6627-42c7-ab99-f75cb663c405))
+  (via (at 103.05 103.10) (size 0.85) (drill 0.50) (layers "F.Cu" "B.Cu") (net 2) (tstamp eb4ef7be-1cc4-4e6f-addc-12fb5a7d219d))
+  (segment (start 103.05 103.10) (end 103.10 105.00) (width 0.30) (layer "B.Cu") (net 2) (tstamp 97419c3b-bf24-4ee7-a7d7-66da59761eeb))
+  (segment (start 103.10 105.00) (end 103.135 109.10) (width 0.30) (layer "B.Cu") (net 2) (tstamp e78739a2-0630-4276-a4b1-04dbdec1105c))
+
+  ;; Net 3: DQ (B.Cu: J_DQ -> right edge -> U1.4, 0.25 mm)
+  (segment (start 103.75 101.25) (end 104.405 102.60) (width 0.25) (layer "B.Cu") (net 3) (tstamp b45dd23d-e5b2-4ee4-94da-b7feb075b67e))
+  (segment (start 104.405 102.60) (end 104.405 109.10) (width 0.25) (layer "B.Cu") (net 3) (tstamp 0cc995ab-d5e1-446c-bcd3-1511c76fc524))
+
+  ;; Net 4: GND (J_GND -> Via_GND_T -> F.Cu R_H1/R_H2 -> Via_GND_B -> B.Cu U1.5)
+  (segment (start 101.25 101.25) (end 101.60 103.10) (width 0.45) (layer "B.Cu") (net 4) (tstamp fa48425a-16cf-4384-9094-46c000a675f9))
+  (via (at 101.60 103.10) (size 0.85) (drill 0.50) (layers "F.Cu" "B.Cu") (net 4) (tstamp c73e2294-b5ee-4154-9b81-304b70029a22))
+  (segment (start 101.60 103.10) (end 101.50 105.00) (width 0.30) (layer "B.Cu") (net 4) (tstamp 757fdf1e-f507-4358-b128-678e5dd459f6))
+  (segment (start 101.60 103.10) (end 101.60 104.25) (width 0.40) (layer "F.Cu") (net 4) (tstamp 6153a049-154c-420c-bdf6-8352bab9b06b))
+  (segment (start 101.60 104.25) (end 103.95 104.25) (width 0.40) (layer "F.Cu") (net 4) (tstamp c7f10c24-aecc-4bd6-89d5-e418a6385385))
+  (segment (start 103.95 104.25) (end 103.95 105.60) (width 0.45) (layer "F.Cu") (net 4) (tstamp 9487adf1-ae43-4093-b24f-149d93b4e1df))
+  (segment (start 103.95 105.60) (end 103.95 108.40) (width 0.45) (layer "F.Cu") (net 4) (tstamp ef976f73-1123-4442-92dd-c76e58623b49))
+  (segment (start 103.95 108.40) (end 104.05 111.75) (width 0.45) (layer "F.Cu") (net 4) (tstamp 54850a08-e36e-4d21-9a1a-9c83ea437387))
+  (via (at 104.05 111.75) (size 0.85) (drill 0.50) (layers "F.Cu" "B.Cu") (net 4) (tstamp 38d8cc44-25aa-428b-b53e-80e907d9a140))
+  (segment (start 104.05 111.75) (end 104.405 114.40) (width 0.40) (layer "B.Cu") (net 4) (tstamp 83b628ee-da08-4758-81e5-fafd4d7f43ac))
+
+  ;; ==================== Isothermal GND Copper Zones ====================
+  (zone (net 4) (net_name "GND") (layer "F.Cu") (tstamp 44fceb37-bd52-4ff6-b370-aaaa05fc02a9)
+    (hatch edge 0.5)
+    (connect_pads (clearance 0.25))
+    (min_thickness 0.2)
+    (fill (thermal_gap 0.25) (thermal_bridge_width 0.3))
+    (polygon
+      (pts
+        (xy 100.35 104.20) (xy 104.65 104.20) (xy 104.65 115.15) (xy 100.35 115.15)
+      )
+    )
+  )
+
+  (zone (net 4) (net_name "GND") (layer "B.Cu") (tstamp a554d680-e6bc-42a7-ae61-182c3d4634a2)
+    (hatch edge 0.5)
+    (connect_pads (clearance 0.25))
+    (min_thickness 0.2)
+    (fill (thermal_gap 0.25) (thermal_bridge_width 0.3))
+    (polygon
+      (pts
+        (xy 100.35 104.20) (xy 104.65 104.20) (xy 104.65 115.15) (xy 100.35 115.15)
+      )
+    )
+  )
+)
