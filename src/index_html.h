@@ -140,7 +140,7 @@ main{width:100%;max-width:860px;padding:.85rem .75rem 1.5rem}
     </div>
   </div>
   <div class="footer">
-    <p>AP: AP_THERMAL | 协议兼容: water_sensor_hx711 (FengBLE / MQTT / Web)</p>
+    <p>AP: AP_THERMAL | 协议: Thermal Pulse v2 (BLE 16B / MQTT JSON / Web)</p>
     <p>版权所有: 山东卷积分公司</p>
   </div>
 </main>
@@ -173,7 +173,7 @@ function buildCards(sensors,activeCh){
   if(!tblBuilt){
     const rows=[
       ['液位状态','st'],['冷却衰减比','rt'],['实时温度','tn'],['峰值温升','dt'],
-      ['10s/30s降温','dr'],['起止温度','t0'],['原始值','rw'],['运行状态','ht']
+      ['10s/30s降温','dr'],['起止温度','t0'],['运行状态','ht']
     ];
     let h='<table class="cmp-tbl"><thead><tr><th class="lbl">参数</th>';
     sensors.forEach((_,i)=>{
@@ -209,7 +209,6 @@ function buildCards(sensors,activeCh){
     dtEl.innerHTML='+'+Number(s.delta_t).toFixed(2)+' ℃'+(s.t_peak===null?'':'<span class="sub-hint">峰 '+Number(s.t_peak).toFixed(2)+'</span>');
     setCell('dr',Number(s.drop10).toFixed(2)+' / '+Number(s.drop30).toFixed(2));
     setCell('t0',(s.t0===null?'--':Number(s.t0).toFixed(1))+'→'+(s.t1===null?'--':Number(s.t1).toFixed(1)));
-    setCell('rw',String(s.raw_val));
     const htEl=document.getElementById('ht'+i);
     htEl.className=(s.heating?'ht-on':'')+heatCls;
     htEl.textContent=s.heating?'🔥 加热中':(s.calibrating?'调参中':(isAct?'轮巡中':'待机'));

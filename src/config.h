@@ -2,7 +2,7 @@
 
 // ============================================================
 //  全局配置文件 — 所有硬件参数、协议常量、网络配置的唯一来源
-//  框架与通信协议（WiFi / WebServer / BLE / MQTT）完全兼容 water_sensor_hx711
+//  热脉冲液位传感器协议版本：Thermal Pulse v2 (BLE 16B / MQTT JSON)
 // ============================================================
 
 #include <Arduino.h>
@@ -47,6 +47,10 @@ enum ProbeType : uint8_t {
 #define THERMAL_CAL_SAMPLES     3       // 可选空管自动调参连续采样轮数
 #define THERMAL_DEBOUNCE_COUNT  1       // 状态切换确认轮数
 #define THERMAL_WDT_TIMEOUT_S   20      // 硬件看门狗 20 秒防干烧
+#define THERMAL_MAX_SAFE_TEMP_C 85.0f   // 常规轮巡超温保护阈值 (℃)，超温立即关断加热
+#define THERMAL_FAULT_MAX_ERR   3       // 18B20 连续无效读数次数门槛 (3s)，防单次干扰打断冷却
+#define THERMAL_BUS_V5_MIN      4.20f   // 5V 加热母线欠压保护阈值 (V)
+#define THERMAL_BUS_V5_MAX      5.60f   // 5V 加热母线过压保护阈值 (V)
 
 // 0.5mm 不锈钢管参数（实测：空气 36~42%，静水 58~63%）
 #define STEEL_HEAT_TIME_MS      10000UL // 10s 加热 (~15J)
@@ -71,11 +75,16 @@ enum ProbeType : uint8_t {
 // -------- 采样与广播发送定时周期 (1 Hz，与 water_sensor_hx711 一致) --------
 #define SEND_INTERVAL_MS        1000UL
 
-// -------- BLE 广播参数（与 water_sensor_hx711 / water_relay 完全兼容） --------
+// -------- BLE 广播参数（Thermal Pulse v2 紧凑 16B 单包协议） --------
 #define BLE_DEVICE_NAME         "FengBLE"
 // Company ID: 0xFFFF（厂商测试标识），BLE 小端序：LSB 在前
 #define BLE_COMPANY_ID_LSB      0xFF
 #define BLE_COMPANY_ID_MSB      0xFF
+#define BLE_PROTOCOL_VERSION    0x02
+
+// -------- MQTT 协议版本与缓冲区 --------
+#define MQTT_PROTOCOL_VERSION   2
+#define MQTT_BUFFER_SIZE        1024
 
 // -------- WiFi 网络配置 --------
 #define FACTORY_WIFI_SSID        "Perfect"

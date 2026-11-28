@@ -44,16 +44,12 @@ static String format_float_or_null(float v, int decimals = 2) {
     return String(v, decimals);
 }
 
-// GET /api/data — 兼容 water_sensor_hx711 并扩展每通道热式字段
+// GET /api/data — 热脉冲传感器全量实时状态
 static void handle_get_data() {
     String json = "{\"sensors\":[";
     for (int i = 0; i < SENSOR_COUNT; i++) {
         const SensorDataCache& s = data_cache_get_sensor(i);
         json += "{";
-        json += "\"raw_val\":"      + String(s.raw_val) + ",";
-        json += "\"filtered\":"     + String(s.filtered) + ",";
-        json += "\"baseline\":"     + String(s.baseline) + ",";
-        json += "\"threshold\":"    + String(s.threshold) + ",";
         json += "\"detected\":"     + String(s.detected ? "true" : "false") + ",";
         json += "\"t_now\":"        + format_float_or_null(s.t_now, 2) + ",";
         json += "\"t0\":"           + format_float_or_null(s.t0, 2) + ",";
@@ -148,20 +144,6 @@ static void handle_wifi_scan() {
     s_server.send(200, "application/json", json);
 }
 
-// GET /api/hx711 — 兼容旧接口，返回各通道 18B20 在线状态
-static void handle_get_hx711() {
-    String json = "{\"shift_n\":0,\"channels\":[";
-    for (int i = 0; i < SENSOR_COUNT; i++) {
-        json += "{";
-        json += "\"ch\":" + String(i) + ",";
-        json += "\"online\":" + String(app_is_channel_online(i) ? "true" : "false");
-        json += "}";
-        if (i < SENSOR_COUNT - 1) json += ",";
-    }
-    json += "]}";
-    s_server.send(200, "application/json", json);
-}
-
 // POST /api/calibrate — 支持全通道 (ch=-1 或省略) 或单通道 (ch=0~2) 标定/重置
 static void handle_post_calibrate() {
     String action = s_server.hasArg("action") ? s_server.arg("action") : "";
@@ -240,7 +222,6 @@ void web_config_init() {
     s_server.on("/api/wifi",      HTTP_GET,  handle_get_sysconfig);
     s_server.on("/api/wifi",      HTTP_POST, handle_post_sysconfig);
     s_server.on("/api/scan",      HTTP_GET,  handle_wifi_scan);
-    s_server.on("/api/hx711",     HTTP_GET,  handle_get_hx711);
     s_server.on("/api/calibrate", HTTP_POST, handle_post_calibrate);
     s_server.on("/api/thermal",   HTTP_POST, handle_post_thermal);
 

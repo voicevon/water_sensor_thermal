@@ -33,6 +33,7 @@ static MeasurePhase  s_phase                = PH_START_PULSE;
 static unsigned long s_slot_start           = 0;
 static unsigned long s_phase_start          = 0;
 static float         s_bus_v5               = 5.0f;
+static bool          s_bus_v5_ok            = true;
 static bool          s_has_first_sample     = false;
 
 // MQTT 定时发布全局变量（与 wifi_mqtt.cpp 共享）
@@ -142,6 +143,31 @@ static void run_1hz_sampler(unsigned long now) {
     s_last_sample_time = now;
 
     s_bus_v5 = read_5v_bus();
+    bool v5_ok = (s_bus_v5 >= THERMAL_BUS_V5_MIN && s_bus_v5 <= THERMAL_BUS_V5_MAX);
+    if (v5_ok != s_bus_v5_ok) {
+        s_bus_v5_ok = v5_ok;
+        if (!s_bus_v5_ok) {
+            Serial.printf("[Power ERR] 5V 母线电压异常 (%.2fV, 允许 %.2f~%.2fV), 禁止加热\n",
+                          s_bus_v5, THERMAL_BUS_V5_MIN, THERMAL_BUS_V5_MAX);
+        } else {
+            Serial.printf("[Power OK] 5V 母线电压已恢复正常 (%.2fV)\n", s_bus_v5);
+        }
+    }
+    if (!s_bus_v5_ok && is_any_heating()) {
+        for (int i = 0; i < SENSOR_COUNT; i++) {
+            if (s_channels[i].isHeating()) {
+                if (s_step_active) {
+                    s_channels[i].heaterOff();
+                } else {
+                    s_channels[i].endHeating(now);
+                }
+            }
+        }
+        if (s_step_active) {
+            s_step_heating = false;
+            Serial.printf("# STEP aborted heating due to 5V bus fault (%.2fV)\n", s_bus_v5);
+        }
+    }
 
     for (int i = 0; i < SENSOR_COUNT; i++) {
         float t = s_channels[i].readTempC();
@@ -200,7 +226,7 @@ static void run_thermal_scheduler(unsigned long now) {
             app_all_heaters_off();
             s_slot_start  = now;
             s_phase_start = now;
-            if (ch.startPulse(now)) {
+            if (s_bus_v5_ok && ch.startPulse(now)) {
                 s_phase = PH_HEATING;
             } else {
                 s_phase = PH_COOLDOWN;
@@ -208,7 +234,11 @@ static void run_thermal_scheduler(unsigned long now) {
             break;
         }
         case PH_HEATING: {
-            if (now - s_phase_start >= ch.getHeatMs()) {
+            if (!ch.isHeating()) {
+                // 已被超温保护、5V 母线异常或探头故障提前切断加热
+                app_all_heaters_off();
+                s_phase = PH_COOLDOWN;
+            } else if (now - s_phase_start >= ch.getHeatMs()) {
                 ch.endHeating(now);
                 app_all_heaters_off();
                 s_phase = PH_COOLDOWN;
@@ -259,6 +289,10 @@ static void handle_serial_commands(unsigned long now) {
                     if (heat_s > 120) heat_s = 120;
                     if (cool_s < 10)  cool_s = 10;
                     if (cool_s > 600) cool_s = 600;
+                    if (!s_bus_v5_ok) {
+                        Serial.printf("# STEP rejected: 5V bus fault (%.2fV)\n", s_bus_v5);
+                        continue;
+                    }
                     app_all_heaters_off();
                     s_step_active     = true;
                     s_step_ch         = (uint8_t)(ch_num - 1);
@@ -321,8 +355,8 @@ void setup() {
     Serial.begin(115200);
     delay(500);
     Serial.println("\n====================================");
-    Serial.println("ESP32 3-CH Thermal Liquid Sensor (frac_10_30)");
-    Serial.println("Protocol Compatible: water_sensor_hx711");
+    Serial.println("ESP32 3-CH Thermal Liquid Sensor (Thermal Pulse v2)");
+    Serial.println("Protocol: BLE v2 (16B) + MQTT v2 (JSON)");
     Serial.printf("DQ Pins:   CH1=%d, CH2=%d, CH3=%d\n",
                   THERMAL_DQ_1_PIN, THERMAL_DQ_2_PIN, THERMAL_DQ_3_PIN);
     Serial.printf("HEAT Pins: CH1=%d, CH2=%d, CH3=%d\n",
@@ -335,7 +369,12 @@ void setup() {
     // 2. 配置 5V 母线 ADC 并初始化 3 路 ThermalChannel 对象
     analogReadResolution(12);
     analogSetPinAttenuation(PIN_5V_MON, ADC_11db);
-    s_bus_v5 = read_5v_bus();
+    s_bus_v5    = read_5v_bus();
+    s_bus_v5_ok = (s_bus_v5 >= THERMAL_BUS_V5_MIN && s_bus_v5 <= THERMAL_BUS_V5_MAX);
+    if (!s_bus_v5_ok) {
+        Serial.printf("[Power ERR] 开机 5V 母线电压异常 (%.2fV, 允许 %.2f~%.2fV), 禁止加热\n",
+                      s_bus_v5, THERMAL_BUS_V5_MIN, THERMAL_BUS_V5_MAX);
+    }
 
     for (int i = 0; i < SENSOR_COUNT; i++) {
         s_channels[i].begin();
@@ -400,26 +439,26 @@ void loop() {
         digitalWrite(PIN_LED_ONBOARD, onboard_led_on ? HIGH : LOW);
     }
 
-    // 4. 1Hz 非阻塞定时同步：Web 缓存 + BLE 广播 + MQTT 上报
+    // 4. 1Hz 非阻塞定时同步：Web 缓存 + BLE v2 广播 + MQTT v2 上报
     if (now - s_last_send_time >= SEND_INTERVAL_MS) {
         s_last_send_time = now;
 
-        int32_t out_sensors[SENSOR_COUNT] = { 0, 0, 0 };
-        bool    out_states[SENSOR_COUNT]  = { false, false, false };
+        SensorDataCache caches[SENSOR_COUNT];
+        ThermalBleFrame bleFrame = {};
+        bleFrame.active_ch   = s_active_ch;
+        bleFrame.bus_v5      = s_bus_v5;
+        bleFrame.bus_v5_ok   = s_bus_v5_ok;
+        bleFrame.calibrating = app_is_any_calibrating();
+
         uint8_t state_byte = 0;
 
         for (int i = 0; i < SENSOR_COUNT; i++) {
             const ThermalChannel& ch = s_channels[i];
-            out_sensors[i] = ch.getRawInt24();
-            out_states[i]  = ch.isDetected();
-            if (out_states[i]) state_byte |= (1 << i);
+            bool detected = ch.isDetected();
+            if (detected) state_byte |= (1 << i);
 
-            SensorDataCache cache;
-            cache.raw_val      = out_sensors[i];
-            cache.filtered     = out_sensors[i];
-            cache.baseline     = ch.getBaselineInt();
-            cache.threshold    = ch.getThresholdInt();
-            cache.detected     = out_states[i];
+            SensorDataCache& cache = caches[i];
+            cache.detected     = detected;
             cache.t_now        = ch.getTempNow();
             cache.t0           = ch.getT0();
             cache.t1           = ch.getT1();
@@ -438,13 +477,20 @@ void loop() {
             cache.online       = ch.isOnline();
             cache.heating      = ch.isHeating();
             web_config_update_sensor(i, cache);
+
+            bleFrame.temp_c[i]     = cache.t_now;
+            bleFrame.cool_ratio[i] = cache.cool_ratio;
+            bleFrame.has_ratio[i]  = cache.calibrated;
+            bleFrame.state[i]      = cache.state;
+            bleFrame.heating[i]    = cache.heating;
+            bleFrame.probe_type[i] = cache.probe_type;
         }
 
-        ble_update(out_sensors, out_states);
+        ble_update(bleFrame);
 
         if (now - s_last_mqtt_publish_time >= g_mqtt_publish_interval_ms) {
             s_last_mqtt_publish_time = now;
-            mqtt_publish(out_sensors, state_byte);
+            mqtt_publish_thermal(caches, s_bus_v5, s_bus_v5_ok, s_active_ch, bleFrame.calibrating);
         }
 
         // 仅在周期结果或状态变化时打印串口汇总（避免数据未变时刷屏）

@@ -229,6 +229,7 @@ void wifi_mqtt_init() {
         s_mqttMutex = xSemaphoreCreateMutex();
     }
 
+    s_mqttClient.setBufferSize(MQTT_BUFFER_SIZE);
     s_mqttClient.setCallback(mqtt_callback);
 
     String target_ssid = get_sta_ssid();
@@ -305,18 +306,64 @@ void wifi_mqtt_loop(unsigned long current_time) {
     }
 }
 
-bool mqtt_publish(const int32_t *sensors, uint8_t stateByte) {
-    if (!s_mqtt_send_enabled || s_mqtt_connecting) return false;
+static inline float round2(float v) {
+    return roundf(v * 100.0f) / 100.0f;
+}
+
+static inline float round3(float v) {
+    return roundf(v * 1000.0f) / 1000.0f;
+}
+
+bool mqtt_publish_thermal(const SensorDataCache* channels,
+                          float bus_v5,
+                          bool bus_v5_ok,
+                          uint8_t active_ch,
+                          bool calibrating) {
+    if (!s_mqtt_send_enabled || s_mqtt_connecting || !channels) return false;
 
     MqttLock lock(s_mqttMutex);
     if (!lock.locked() || !s_mqttClient.connected()) return false;
 
-    char json_buf[256];
-    snprintf(json_buf, sizeof(json_buf),
-             "{\"name\":\"%s\", \"sensor1\":%ld, \"sensor2\":%ld, \"sensor3\":%ld, \"state\":%u}",
-             get_device_name().c_str(), (long)sensors[0], (long)sensors[1], (long)sensors[2], stateByte);
+    StaticJsonDocument<1024> doc;
+    doc["ver"]         = MQTT_PROTOCOL_VERSION;
+    doc["name"]        = get_device_name();
+    doc["bus_v5"]      = round2(bus_v5);
+    doc["bus_v5_ok"]   = bus_v5_ok;
+    doc["active_ch"]   = active_ch;
+    doc["calibrating"] = calibrating;
 
-    Serial.printf("[MQTT Publish] Topic: %s, Payload: %s\n", MQTT_STATUS_TOPIC, json_buf);
+    JsonArray arr = doc.createNestedArray("channels");
+    for (int i = 0; i < SENSOR_COUNT; i++) {
+        const SensorDataCache& c = channels[i];
+        JsonObject ch = arr.createNestedObject();
+        ch["ch"] = i + 1;
+        if (isnan(c.t_now) || isinf(c.t_now)) ch["t_now"] = nullptr;
+        else                                   ch["t_now"] = round2(c.t_now);
+        ch["heating"]      = c.heating;
+        if (c.calibrated)  ch["cool_ratio"] = round3(c.cool_ratio);
+        else               ch["cool_ratio"] = nullptr;
+        ch["state"]        = c.state;
+        ch["probe_type"]   = c.probe_type;
+        ch["online"]       = c.online;
+        if (isnan(c.t0) || isinf(c.t0))         ch["t0"]     = nullptr;
+        else                                    ch["t0"]     = round2(c.t0);
+        if (isnan(c.t_peak) || isinf(c.t_peak)) ch["t_peak"] = nullptr;
+        else                                    ch["t_peak"] = round2(c.t_peak);
+        ch["delta_t"]      = round2(c.delta_t);
+        ch["drop_mid"]     = round2(c.drop10);
+        ch["drop_end"]     = round2(c.drop30);
+        ch["ratio_liquid"] = round2(c.ratio_liquid);
+        ch["ratio_empty"]  = round2(c.ratio_empty);
+    }
+
+    char json_buf[MQTT_BUFFER_SIZE];
+    size_t n = serializeJson(doc, json_buf, sizeof(json_buf));
+    if (n == 0 || n >= sizeof(json_buf)) {
+        Serial.println("[MQTT ERR] Thermal v2 JSON serialization overflow");
+        return false;
+    }
+
+    Serial.printf("[MQTT Publish] Topic: %s (%uB)\n", MQTT_STATUS_TOPIC, (unsigned)n);
     return s_mqttClient.publish(MQTT_STATUS_TOPIC, json_buf);
 }
 

@@ -1,4 +1,7 @@
-# PCB 正反面布局规划图与布线规范 (v1.0)
+# PCB 正反面布局规划图与布线规范 (v1.0 历史存档)
+
+> [!NOTE]
+> **历史方案存档**：本文档对应早期 `75 × 55 mm` 裸模组主控板与 `4.5 × 11.0 mm` 探头板草案。现行 PCB 工程已迭代为 **`88 × 78 mm` ESP32 DevKit V1 载板**（[main_board_pcb.kicad_pcb](../hardware/pcb/main_board_pcb/main_board_pcb.kicad_pcb)）与 **`4.8 × 12.0 mm` 双 33Ω 探头微型板**（[probe_mini_pcb.kicad_pcb](../hardware/pcb/probe_mini_pcb/probe_mini_pcb.kicad_pcb)）；本文档中的**反热短路过孔摆法、正反错开大焊盘、天线净空区原则**仍具参考价值。
 
 本文档包含本项目所需的 **两块 2 层 FR4 PCB** 的正反面详细布局标注，可直接对照在立创 EDA / KiCad 中摆放元器件与铺铜：
 1. **主控板 PCB**（75.0 × 55.0 mm，板厚 1.6 mm，1 oz 铜厚）

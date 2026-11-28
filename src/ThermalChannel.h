@@ -74,11 +74,6 @@ public:
     ThermalState getState()        const { return _state; }
     bool         isDetected()      const { return _state == ThermalState::LIQUID; }
 
-    // 兼容 HX711 BLE/MQTT 协议的 24 位有符号整型（冷却衰减比 × 1000，单位 0.1%）
-    int32_t      getRawInt24()     const;
-    int32_t      getBaselineInt()  const;
-    int32_t      getThresholdInt() const;
-
     static bool        isValidTemp(float t);
     static const char* stateToString(ThermalState st);
 
@@ -134,6 +129,7 @@ private:
     // 硬件与判定状态
     bool          _online       = false;
     bool          _heating      = false;
+    uint8_t       _errCount     = 0;
     ThermalState  _state        = ThermalState::UNCALIBRATED;
     ThermalState  _pendingState = ThermalState::UNCALIBRATED;
     uint8_t       _debounceCnt  = 0;

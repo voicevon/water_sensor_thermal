@@ -58,24 +58,51 @@ float ThermalChannel::readTempC() {
 }
 
 void ThermalChannel::onTempSample(float tempC, unsigned long now) {
-    if (!isValidTemp(tempC)) {
+    // 过滤 DS18B20 上电/复位默认的 85.0℃ 假值（首帧或单秒突跳 >15℃ 视为无效）
+    bool isResetSpike = (fabsf(tempC - 85.0f) < 0.01f) &&
+                        (isnan(_tNow) || fabsf(tempC - _tNow) > 15.0f);
+
+    if (!isValidTemp(tempC) || isResetSpike) {
+        if (_errCount < 255) _errCount++;
+        if (_errCount < THERMAL_FAULT_MAX_ERR) {
+            // 单次/偶发总线干扰跳过，不清空正在进行的冷却状态机
+            return;
+        }
         _tNow = NAN;
         if (_heating) heaterOff();
         _online    = false;
         _coolPhase = COOL_IDLE;
         if (_state != ThermalState::FAULT) {
-            Serial.printf("[Thermal ERR] CH%d 18B20 读温异常 (%.2f), 禁止加热\n", _id + 1, tempC);
+            Serial.printf("[Thermal ERR] CH%d 18B20 连续 %u 次读温异常 (%.2f), 禁止加热\n",
+                          _id + 1, _errCount, tempC);
         }
         _transitionState(ThermalState::FAULT);
         return;
     }
 
-    _tNow   = tempC;
-    _online = true;
+    bool wasOffline = (!_online || _state == ThermalState::FAULT);
+    _errCount = 0;
+    _tNow     = tempC;
+    _online   = true;
 
-    if (_state == ThermalState::FAULT) {
-        _transitionState(_hasRatio ? ((_coolRatio > _ratioLiquid) ? ThermalState::LIQUID : ThermalState::EMPTY)
-                                   : ThermalState::UNCALIBRATED);
+    if (wasOffline) {
+        // 探头热插拔/断线恢复后重新配置 12 位精度与非阻塞转换模式
+        _dallas.begin();
+        _dallas.setResolution(12);
+        _dallas.setWaitForConversion(false);
+        if (_state == ThermalState::FAULT) {
+            Serial.printf("[Thermal OK] CH%d 18B20 已恢复在线 (%.2fC)\n", _id + 1, tempC);
+            _transitionState(_hasRatio ? ((_coolRatio > _ratioLiquid) ? ThermalState::LIQUID : ThermalState::EMPTY)
+                                       : ThermalState::UNCALIBRATED);
+        }
+    }
+
+    // 常规轮巡超温保护：防止夏季高温环境或异常工况下干烧
+    if (_heating && tempC >= THERMAL_MAX_SAFE_TEMP_C) {
+        Serial.printf("[Thermal WARN] CH%d 超温保护 (%.2fC >= %.1fC), 立即关断加热\n",
+                      _id + 1, tempC, THERMAL_MAX_SAFE_TEMP_C);
+        endHeating(now);
+        return;
     }
 
     switch (_coolPhase) {
@@ -142,6 +169,14 @@ bool ThermalChannel::startPulse(unsigned long now) {
         _online    = false;
         _coolPhase = COOL_IDLE;
         _transitionState(ThermalState::FAULT);
+        return false;
+    }
+
+    if (_tNow >= THERMAL_MAX_SAFE_TEMP_C) {
+        heaterOff();
+        _coolPhase = COOL_IDLE;
+        Serial.printf("[Thermal WARN] CH%d 当前温度过高 (%.2fC >= %.1fC), 跳过本轮加热\n",
+                      _id + 1, _tNow, THERMAL_MAX_SAFE_TEMP_C);
         return false;
     }
 
@@ -220,18 +255,6 @@ void ThermalChannel::setRatios(float ratioLiquid, float ratioEmpty) {
         _ratioLiquid = ratioLiquid;
         _ratioEmpty  = ratioEmpty;
     }
-}
-
-int32_t ThermalChannel::getRawInt24() const {
-    return (int32_t)lroundf(_coolRatio * 1000.0f);
-}
-
-int32_t ThermalChannel::getBaselineInt() const {
-    return (int32_t)lroundf(_ratioEmpty * 1000.0f);
-}
-
-int32_t ThermalChannel::getThresholdInt() const {
-    return (int32_t)lroundf(_ratioLiquid * 1000.0f);
 }
 
 bool ThermalChannel::isValidTemp(float t) {
