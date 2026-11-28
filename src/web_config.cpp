@@ -55,16 +55,22 @@ static void handle_get_data() {
         json += "\"baseline\":"     + String(s.baseline) + ",";
         json += "\"threshold\":"    + String(s.threshold) + ",";
         json += "\"detected\":"     + String(s.detected ? "true" : "false") + ",";
+        json += "\"t_now\":"        + format_float_or_null(s.t_now, 2) + ",";
         json += "\"t0\":"           + format_float_or_null(s.t0, 2) + ",";
         json += "\"t1\":"           + format_float_or_null(s.t1, 2) + ",";
+        json += "\"t_peak\":"       + format_float_or_null(s.t_peak, 2) + ",";
         json += "\"delta_t\":"      + String(s.delta_t, 2) + ",";
-        json += "\"empty_dt\":"     + String(s.empty_dt, 2) + ",";
+        json += "\"drop10\":"       + String(s.drop10, 2) + ",";
+        json += "\"drop30\":"       + String(s.drop30, 2) + ",";
+        json += "\"cool_ratio\":"   + String(s.cool_ratio, 4) + ",";
+        json += "\"empty_dt\":"     + String(s.empty_dt, 3) + ",";
         json += "\"ratio_liquid\":" + String(s.ratio_liquid, 2) + ",";
         json += "\"ratio_empty\":"  + String(s.ratio_empty, 2) + ",";
         json += "\"calibrated\":"   + String(s.calibrated ? "true" : "false") + ",";
         json += "\"calibrating\":"  + String(s.calibrating ? "true" : "false") + ",";
         json += "\"state\":"        + String(s.state) + ",";
         json += "\"state_str\":\""  + String(ThermalChannel::stateToString((ThermalState)s.state)) + "\",";
+        json += "\"probe_type\":"   + String(s.probe_type) + ",";
         json += "\"online\":"       + String(s.online ? "true" : "false") + ",";
         json += "\"heating\":"      + String(s.heating ? "true" : "false");
         json += "}";
@@ -176,26 +182,44 @@ static void handle_post_calibrate() {
     }
 }
 
-// POST /api/thermal — 每通道独立配置迟滞比例阈值（ch, ratio_liquid, ratio_empty）
+// POST /api/thermal — 每通道独立配置封装类型（probe_type）和/或迟滞阈值（ratio_liquid, ratio_empty）
 static void handle_post_thermal() {
-    if (!s_server.hasArg("ch") || !s_server.hasArg("ratio_liquid") || !s_server.hasArg("ratio_empty")) {
-        s_server.send(400, "text/plain", "Missing ch, ratio_liquid or ratio_empty");
+    if (!s_server.hasArg("ch")) {
+        s_server.send(400, "text/plain", "Missing ch");
         return;
     }
-    int   ch = s_server.arg("ch").toInt();
-    float rl = s_server.arg("ratio_liquid").toFloat();
-    float re = s_server.arg("ratio_empty").toFloat();
-
+    int ch = s_server.arg("ch").toInt();
     if (ch < 0 || ch >= SENSOR_COUNT) {
         s_server.send(400, "text/plain", "Invalid ch");
         return;
     }
-    if (!nvs_set_channel_ratios(ch, rl, re)) {
-        s_server.send(400, "text/plain", "Invalid ratios (require 0.1 < liquid < empty < 0.95)");
+
+    bool handled = false;
+    if (s_server.hasArg("probe_type")) {
+        uint8_t pt = (uint8_t)s_server.arg("probe_type").toInt();
+        nvs_set_probe_type(ch, pt);
+        app_sync_channel_probe_type(ch);
+        Serial.printf("[WebConfig] CH%d probe_type updated -> %s\n",
+                      ch + 1, pt == PROBE_CERAMIC ? "CERAMIC" : "STEEL");
+        handled = true;
+    }
+
+    if (s_server.hasArg("ratio_liquid") && s_server.hasArg("ratio_empty")) {
+        float rl = s_server.arg("ratio_liquid").toFloat();
+        float re = s_server.arg("ratio_empty").toFloat();
+        if (!nvs_set_channel_ratios(ch, rl, re)) {
+            s_server.send(400, "text/plain", "Invalid ratios (require 0.1 < empty < liquid < 0.95)");
+            return;
+        }
+        app_sync_channel_ratios(ch);
+        Serial.printf("[WebConfig] CH%d coolRatio thresholds updated: LIQUID>%.2f, EMPTY<%.2f\n", ch + 1, rl, re);
+        handled = true;
+    }
+
+    if (!handled) {
+        s_server.send(400, "text/plain", "Missing probe_type or ratio_liquid/ratio_empty");
         return;
     }
-    app_sync_channel_ratios(ch);
-    Serial.printf("[WebConfig] CH%d ratios updated: liquid<%.2f, empty>%.2f\n", ch + 1, rl, re);
     s_server.send(200, "text/plain", "OK");
 }
 

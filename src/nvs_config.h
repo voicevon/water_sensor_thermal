@@ -21,10 +21,13 @@ String get_device_name();
 String get_mqtt_broker();
 int    get_mqtt_port();
 
-// ---- 每通道独立热式标定与迟滞比例阈值配置（ch: 0~2） ----
-bool   nvs_set_empty_delta_t(int ch, float val);
-float  get_empty_delta_t(int ch);
+// ---- 每通道独立热式封装类型、标定与迟滞比例阈值配置（ch: 0~2） ----
+bool    nvs_set_probe_type(int ch, uint8_t probe_type);
+uint8_t get_probe_type(int ch);
 
-bool   nvs_set_channel_ratios(int ch, float ratio_liquid, float ratio_empty);
-float  get_channel_ratio_liquid(int ch);
-float  get_channel_ratio_empty(int ch);
+bool    nvs_set_empty_delta_t(int ch, float val);
+float   get_empty_delta_t(int ch);
+
+bool    nvs_set_channel_ratios(int ch, float ratio_liquid, float ratio_empty);
+float   get_channel_ratio_liquid(int ch);
+float   get_channel_ratio_empty(int ch);

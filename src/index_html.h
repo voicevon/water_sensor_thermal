@@ -14,40 +14,51 @@ static const char INDEX_HTML[] PROGMEM = R"rawhtml(
 :root{--bg:#0b0f19;--card:rgba(22,30,49,.85);--border:rgba(255,255,255,.08);--text:#f1f5f9;--muted:#64748b;--blue:#38bdf8;--cyan:#06b6d4;--green:#10b981;--red:#f43f5e;--yellow:#f59e0b;--nav:rgba(17,24,39,.97)}
 *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
 body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center}
-header{width:100%;background:var(--nav);border-bottom:1px solid var(--border);padding:.85rem 1.5rem;position:sticky;top:0;z-index:100;backdrop-filter:blur(8px)}
-.header-main{max-width:860px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;width:100%;gap:.75rem;flex-wrap:wrap}
-.logo{font-size:1.1rem;font-weight:700;letter-spacing:.5px;background:linear-gradient(135deg,var(--blue),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.status-dots{display:flex;gap:.75rem;align-items:center;font-size:.8rem;color:var(--muted);background:rgba(0,0,0,.3);padding:.3rem .65rem;border-radius:20px;border:1px solid var(--border)}
-.status-indicator{display:flex;align-items:center;gap:.35rem}
+header{width:100%;background:var(--nav);border-bottom:1px solid var(--border);padding:.6rem 1rem;position:sticky;top:0;z-index:100;backdrop-filter:blur(8px)}
+.header-main{max-width:860px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;width:100%;gap:.5rem;flex-wrap:wrap}
+.logo{font-size:1rem;font-weight:700;letter-spacing:.4px;background:linear-gradient(135deg,var(--blue),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.status-dots{display:flex;gap:.65rem;align-items:center;font-size:.78rem;color:var(--muted);background:rgba(0,0,0,.3);padding:.25rem .6rem;border-radius:20px;border:1px solid var(--border)}
+.status-indicator{display:flex;align-items:center;gap:.3rem}
 .dot{width:8px;height:8px;border-radius:50%;display:inline-block;background:#64748B;transition:all .3s ease}
 .dot.on{background:var(--green);box-shadow:0 0 8px var(--green)}
 .dot.off{background:var(--red);box-shadow:0 0 4px var(--red)}
-.nav-tabs{display:flex;width:100%;background-color:var(--card);border:1px solid var(--border);border-radius:12px;padding:.3rem;margin-bottom:1.25rem;gap:.3rem}
-.tab-item{flex:1;text-align:center;padding:.65rem .5rem;font-size:.88rem;font-weight:600;color:var(--muted);border-radius:8px;cursor:pointer;transition:all .2s ease;user-select:none}
+.nav-tabs{display:flex;width:100%;background-color:var(--card);border:1px solid var(--border);border-radius:10px;padding:.25rem;margin-bottom:.75rem;gap:.25rem}
+.tab-item{flex:1;text-align:center;padding:.5rem .4rem;font-size:.84rem;font-weight:600;color:var(--muted);border-radius:8px;cursor:pointer;transition:all .2s ease;user-select:none}
 .tab-item:hover{color:var(--text)}
 .tab-item.active{background:linear-gradient(135deg,rgba(56,189,248,.18),rgba(6,182,212,.18));color:var(--blue);border:1px solid rgba(56,189,248,.35)}
-.footer{text-align:center;font-size:.78rem;color:var(--muted);margin-top:1.5rem;border-top:1px solid var(--border);padding-top:1rem;line-height:1.8}
-main{width:100%;max-width:860px;padding:1.5rem 1rem 3rem}
+.footer{text-align:center;font-size:.74rem;color:var(--muted);margin-top:.85rem;border-top:1px solid var(--border);padding-top:.65rem;line-height:1.6}
+main{width:100%;max-width:860px;padding:.85rem .75rem 1.5rem}
 .tab-panel{display:none}.tab-panel.active{display:block}
-.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.2rem 1.4rem;margin-bottom:1rem;backdrop-filter:blur(12px)}
-.card-title{font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.8rem}
-.sensor-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem}
-.sc{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.3rem;transition:all .25s;backdrop-filter:blur(12px)}
-.sc.triggered{border-color:rgba(6,182,212,.5);box-shadow:0 0 18px rgba(6,182,212,.15)}
-.sc.fault{border-color:rgba(244,63,94,.45)}
-.sc-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
-.sc-name{font-size:1rem;font-weight:600}
-.badge{font-size:.7rem;padding:3px 10px;border-radius:20px;font-weight:600}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1rem 1.15rem;margin-bottom:.85rem;backdrop-filter:blur(12px)}
+.card-title{font-size:.76rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.65rem}
+.mon-card{padding:.65rem .75rem}
+.mon-bar{display:flex;justify-content:space-between;align-items:center;font-size:.78rem;color:var(--muted);margin-bottom:.5rem;padding:0 .2rem;gap:.5rem;flex-wrap:wrap}
+.mon-bar strong{color:var(--blue);font-weight:600}
+.tbl-wrap{width:100%;overflow-x:auto}
+.cmp-tbl{width:100%;border-collapse:collapse;table-layout:fixed;font-variant-numeric:tabular-nums}
+.cmp-tbl th,.cmp-tbl td{padding:.45rem .35rem;text-align:center;border-bottom:1px solid rgba(255,255,255,.05);font-size:.86rem}
+.cmp-tbl tr:last-child td{border-bottom:none}
+.cmp-tbl th{font-weight:600;color:var(--text);border-bottom:1px solid var(--border);vertical-align:bottom;border-top:2px solid transparent;transition:border-color .2s,background .2s}
+.cmp-tbl th.ch-active{border-top-color:var(--blue);background:rgba(56,189,248,.07)}
+.cmp-tbl th.ch-heat,.cmp-tbl td.ch-heat{background:rgba(245,158,11,.08)}
+.cmp-tbl .lbl{width:23%;text-align:left;color:var(--muted);font-size:.78rem;font-weight:500;padding-left:.4rem;white-space:nowrap}
+.ch-id{display:block;font-size:.88rem;font-weight:700}
+.ch-sub{display:block;font-size:.7rem;color:var(--muted);font-weight:400;margin-top:1px}
+.dt-cell{font-size:1.12rem!important;font-weight:700;color:var(--blue)}
+.dt-cell.liquid{color:var(--cyan)}
+.dt-cell.fault{color:var(--red)}
+.sub-hint{display:block;font-size:.68rem;color:var(--muted);font-weight:400}
+.badge{font-size:.72rem;padding:2px 8px;border-radius:20px;font-weight:600;display:inline-block;white-space:nowrap}
 .badge.triggered{background:rgba(6,182,212,.18);color:var(--cyan)}
 .badge.idle{background:rgba(100,116,139,.15);color:var(--muted)}
 .badge.warn{background:rgba(245,158,11,.18);color:var(--yellow)}
 .badge.fault{background:rgba(244,63,94,.18);color:var(--red)}
-.metric{display:flex;justify-content:space-between;align-items:center;padding:.35rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
-.metric:last-child{border-bottom:none}
-.metric label{font-size:.8rem;color:var(--muted)}
-.metric span{font-size:.9rem;font-weight:600;font-variant-numeric:tabular-nums}
-.dt-val{font-size:1.6rem;font-weight:700;color:var(--blue);text-align:center;margin:.6rem 0}
-.fu{font-size:.85rem;color:var(--muted);font-weight:400}
+.ht-on{color:var(--yellow);font-weight:600}
+@media(max-width:480px){
+  .cmp-tbl th,.cmp-tbl td{padding:.4rem .2rem;font-size:.8rem}
+  .cmp-tbl .lbl{width:25%;font-size:.74rem;padding-left:.25rem}
+  .dt-cell{font-size:1rem!important}
+}
 .btn-row{display:flex;gap:.5rem;margin-top:.8rem;flex-wrap:wrap}
 .btn{padding:.45rem .95rem;border-radius:8px;border:1px solid var(--border);cursor:pointer;font-size:.8rem;font-weight:600;transition:all .15s;background:rgba(255,255,255,.04);color:var(--text)}
 .btn:hover{background:rgba(255,255,255,.1)}
@@ -57,8 +68,9 @@ main{width:100%;max-width:860px;padding:1.5rem 1rem 3rem}
 .btn.danger:hover{background:rgba(244,63,94,.2)}
 .fg{margin-bottom:.85rem}
 .fg label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:.35rem}
-.fg input{width:100%;padding:.5rem .75rem;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.88rem;outline:none;transition:border-color .2s}
-.fg input:focus{border-color:var(--blue)}
+.fg input,.fg select{width:100%;padding:.5rem .75rem;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.88rem;outline:none;transition:border-color .2s}
+.fg select option{background:#111827;color:var(--text)}
+.fg input:focus,.fg select:focus{border-color:var(--blue)}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:.85rem}
 #toast{position:fixed;bottom:1.5rem;right:1.5rem;padding:.7rem 1.2rem;background:rgba(22,30,49,.97);border:1px solid var(--border);border-radius:10px;font-size:.85rem;color:var(--text);transform:translateY(80px);opacity:0;transition:all .3s;pointer-events:none;z-index:999;max-width:280px}
 #toast.show{transform:translateY(0);opacity:1}
@@ -89,16 +101,22 @@ main{width:100%;max-width:860px;padding:1.5rem 1rem 3rem}
     <div class="tab-item" onclick="showTab('network',this)">网络与系统</div>
   </nav>
   <div id="tab-monitor" class="tab-panel active">
-    <div class="sensor-grid" id="sg"></div>
+    <div class="card mon-card">
+      <div class="mon-bar">
+        <span>当前轮巡：<strong id="mon-active">--</strong></span>
+        <span id="mon-cal">等待数据...</span>
+      </div>
+      <div class="tbl-wrap" id="sg"></div>
+    </div>
   </div>
   <div id="tab-calibrate" class="tab-panel">
     <div class="card">
-      <div class="card-title">全局空管一键标定</div>
-      <p style="font-size:.82rem;color:var(--muted);margin-bottom:.75rem">确认管道排空后点击开始，设备将连续采样 3 轮空管温升均值并写入 Flash。也可在下方针对单个通道独立标定或微调迟滞阈值。</p>
+      <div class="card-title">冷却衰减比阈值与可选空管调参</div>
+      <p style="font-size:.82rem;color:var(--muted);margin-bottom:.75rem">本固件采用免标定冷却衰减比算法（frac_10_30 = 前10s降温 / 30s总降温），空气约 36~42%，水中约 58~63%，上电即用。如需针对新封装自动微调空管基准，可在排空后点击下方自动调参，或直接修改每通道阈值。</p>
       <div id="cal-banner" style="font-size:.85rem;margin-bottom:.75rem;color:var(--cyan)"></div>
       <div class="btn-row">
-        <button class="btn primary" onclick="doCal('start',-1)">全部通道标定</button>
-        <button class="btn danger" onclick="doCal('reset',-1)">清除全部标定</button>
+        <button class="btn primary" onclick="doCal('start',-1)">全部空管自动调参</button>
+        <button class="btn danger" onclick="doCal('reset',-1)">恢复默认阈值</button>
       </div>
     </div>
     <div id="ch-cfg-list"></div>
@@ -129,9 +147,10 @@ main{width:100%;max-width:860px;padding:1.5rem 1rem 3rem}
 <div id="toast"></div>
 <script>
 const CH_NAMES=['CH1 碳源','CH2 次氯酸钠','CH3 聚合氯化铁'];
-const ST_TEXT={0:'空管',1:'有液',2:'未标定',3:'探头故障'};
+const CH_SUBS=['碳源','次氯酸钠','聚合氯化铁'];
+const ST_TEXT={0:'空管',1:'有液',2:'首轮采集',3:'探头故障'};
 const ST_CLS={0:'idle',1:'triggered',2:'warn',3:'fault'};
-let cfgBuilt=false;
+let cfgBuilt=false,tblBuilt=false;
 function showTab(id,btn){
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tab-item').forEach(b=>b.classList.remove('active'));
@@ -149,34 +168,51 @@ async function post(url,params){
   const r=await fetch(url,{method:'POST',body:new URLSearchParams(params)});
   const t=await r.text();if(!r.ok)throw new Error(t);return t;
 }
-function buildCards(sensors){
+function buildCards(sensors,activeCh){
   const g=document.getElementById('sg');
-  if(g.children.length!==sensors.length){
-    g.innerHTML='';
+  if(!tblBuilt){
+    const rows=[
+      ['液位状态','st'],['冷却衰减比','rt'],['实时温度','tn'],['峰值温升','dt'],
+      ['10s/30s降温','dr'],['起止温度','t0'],['原始值','rw'],['运行状态','ht']
+    ];
+    let h='<table class="cmp-tbl"><thead><tr><th class="lbl">参数</th>';
     sensors.forEach((_,i)=>{
-      g.insertAdjacentHTML('beforeend',
-        '<div class="sc" id="sc'+i+'">'+
-        '<div class="sc-hdr"><span class="sc-name">'+(CH_NAMES[i]||('CH'+(i+1)))+'</span>'+
-        '<span class="badge idle" id="bd'+i+'">--</span></div>'+
-        '<div class="dt-val" id="dt'+i+'">--<span class="fu"> ℃</span></div>'+
-        '<div class="metric"><label>基准温度 T0</label><span id="t0'+i+'">--</span></div>'+
-        '<div class="metric"><label>加热温度 T1</label><span id="t1'+i+'">--</span></div>'+
-        '<div class="metric"><label>空管标定 ΔT</label><span id="em'+i+'">--</span></div>'+
-        '<div class="metric"><label>加热状态</label><span id="ht'+i+'">--</span></div>'+
-        '</div>');
+      h+='<th id="th'+i+'"><span class="ch-id">CH'+(i+1)+'</span><span class="ch-sub" id="cs'+i+'">'+(CH_SUBS[i]||'')+'</span></th>';
     });
+    h+='</tr></thead><tbody>';
+    rows.forEach(([label,key])=>{
+      h+='<tr><td class="lbl">'+label+'</td>';
+      sensors.forEach((_,i)=>{
+        h+='<td id="'+key+i+'"'+(key==='rt'?' class="dt-cell"':'')+'>--</td>';
+      });
+      h+='</tr>';
+    });
+    h+='</tbody></table>';
+    g.innerHTML=h;
+    tblBuilt=true;
   }
   sensors.forEach((s,i)=>{
-    document.getElementById('dt'+i).innerHTML=Number(s.delta_t).toFixed(2)+'<span class="fu"> ℃</span>';
-    document.getElementById('t0'+i).textContent=s.t0===null?'--':Number(s.t0).toFixed(2)+' ℃';
-    document.getElementById('t1'+i).textContent=s.t1===null?'--':Number(s.t1).toFixed(2)+' ℃';
-    document.getElementById('em'+i).textContent=s.calibrated?(Number(s.empty_dt).toFixed(2)+' ℃'):'未标定';
-    document.getElementById('ht'+i).textContent=s.heating?'🔥 加热中':(s.calibrating?'标定中':'冷却 / 待机');
-    const sc=document.getElementById('sc'+i);
-    const bd=document.getElementById('bd'+i);
-    sc.className='sc'+(s.state===1?' triggered':(s.state===3?' fault':''));
-    bd.className='badge '+(ST_CLS[s.state]||'idle');
-    bd.textContent=ST_TEXT[s.state]||'--';
+    const isAct=(activeCh===i);
+    const heatCls=s.heating?' ch-heat':'';
+    document.getElementById('th'+i).className=(isAct?'ch-active':'')+heatCls;
+    document.getElementById('cs'+i).textContent=(CH_SUBS[i]||'')+'·'+(s.probe_type===1?'陶瓷':'不锈钢');
+    document.getElementById('st'+i).className=heatCls.trim();
+    document.getElementById('st'+i).innerHTML='<span class="badge '+(ST_CLS[s.state]||'idle')+'">'+(ST_TEXT[s.state]||'--')+'</span>';
+    const rtEl=document.getElementById('rt'+i);
+    rtEl.className='dt-cell'+(s.state===1?' liquid':(s.state===3?' fault':''))+heatCls;
+    const thrHint='<span class="sub-hint">&gt;'+Math.round(s.ratio_liquid*100)+'% / &lt;'+Math.round(s.ratio_empty*100)+'%</span>';
+    rtEl.innerHTML=(s.calibrated?(s.cool_ratio*100).toFixed(1)+'%':'--')+thrHint;
+    const setCell=(k,txt)=>{const el=document.getElementById(k+i);el.className=heatCls.trim();el.textContent=txt;};
+    setCell('tn',s.t_now===null?'--':Number(s.t_now).toFixed(2)+' ℃');
+    const dtEl=document.getElementById('dt'+i);
+    dtEl.className=heatCls.trim();
+    dtEl.innerHTML='+'+Number(s.delta_t).toFixed(2)+' ℃'+(s.t_peak===null?'':'<span class="sub-hint">峰 '+Number(s.t_peak).toFixed(2)+'</span>');
+    setCell('dr',Number(s.drop10).toFixed(2)+' / '+Number(s.drop30).toFixed(2));
+    setCell('t0',(s.t0===null?'--':Number(s.t0).toFixed(1))+'→'+(s.t1===null?'--':Number(s.t1).toFixed(1)));
+    setCell('rw',String(s.raw_val));
+    const htEl=document.getElementById('ht'+i);
+    htEl.className=(s.heating?'ht-on':'')+heatCls;
+    htEl.textContent=s.heating?'🔥 加热中':(s.calibrating?'调参中':(isAct?'轮巡中':'待机'));
   });
 }
 function buildChannelConfigs(sensors){
@@ -186,15 +222,20 @@ function buildChannelConfigs(sensors){
   sensors.forEach((s,i)=>{
     list.insertAdjacentHTML('beforeend',
       '<div class="card">'+
-      '<div class="card-title">'+(CH_NAMES[i]||('CH'+(i+1)))+' 独立参数</div>'+
+      '<div class="card-title">'+(CH_NAMES[i]||('CH'+(i+1)))+' 封装与独立阈值</div>'+
+      '<div class="fg"><label>探头封装类型（切换后自动应用推荐时序与默认阈值）</label>'+
+      '<select id="pt'+i+'" onchange="saveProbeType('+i+')">'+
+      '<option value="0"'+(s.probe_type===0?' selected':'')+'>0.5mm 不锈钢管（10s加热 / 0→10/30s衰减）</option>'+
+      '<option value="1"'+(s.probe_type===1?' selected':'')+'>2.0mm 陶瓷管（30s加热 / 10→30/60s尾段衰减）</option>'+
+      '</select></div>'+
       '<div class="form-row">'+
-      '<div class="fg"><label>有液比例阈值 (ΔT/空管 &lt;)</label><input type="number" id="rl'+i+'" step="0.05" min="0.15" max="0.90" value="'+s.ratio_liquid+'"></div>'+
-      '<div class="fg"><label>空管比例阈值 (ΔT/空管 &gt;)</label><input type="number" id="re'+i+'" step="0.05" min="0.20" max="0.95" value="'+s.ratio_empty+'"></div>'+
+      '<div class="fg"><label>有液阈值 (衰减比 &gt;)</label><input type="number" id="rl'+i+'" step="0.02" min="0.20" max="0.90" value="'+s.ratio_liquid+'"></div>'+
+      '<div class="fg"><label>空管阈值 (衰减比 &lt;)</label><input type="number" id="re'+i+'" step="0.02" min="0.15" max="0.85" value="'+s.ratio_empty+'"></div>'+
       '</div>'+
       '<div class="btn-row">'+
       '<button class="btn primary" onclick="saveRatios('+i+')">保存 CH'+(i+1)+' 阈值</button>'+
-      '<button class="btn" onclick="doCal(\'start\','+i+')">单路标定</button>'+
-      '<button class="btn danger" onclick="doCal(\'reset\','+i+')">清除标定</button>'+
+      '<button class="btn" onclick="doCal(\'start\','+i+')">单路空管调参</button>'+
+      '<button class="btn danger" onclick="doCal(\'reset\','+i+')">恢复默认</button>'+
       '</div></div>');
   });
   cfgBuilt=true;
@@ -206,13 +247,24 @@ async function updateData(){
     document.getElementById('dot-mqtt').className='dot '+(d.mqtt_connected?'on':'off');
     document.getElementById('bus-v5').textContent='5V: '+Number(d.bus_v5).toFixed(2)+'V';
     document.getElementById('cal-banner').textContent=d.calibrating?'正在执行空管标定中...':'当前未在标定（轮巡通道 CH'+(d.active_ch+1)+'）';
-    buildCards(d.sensors);
+    document.getElementById('mon-active').textContent='CH'+(d.active_ch+1)+' '+(CH_SUBS[d.active_ch]||'');
+    document.getElementById('mon-cal').textContent=d.calibrating?'⚙️ 空管标定中...':'1s 自动刷新';
+    buildCards(d.sensors,d.active_ch);
     buildChannelConfigs(d.sensors);
   }catch(e){}
 }
 async function doCal(act,ch){
   try{const msg=await post('/api/calibrate',{action:act,ch:ch});toast(msg);updateData();}
   catch(e){toast('操作失败: '+e.message,'err');}
+}
+async function saveProbeType(ch){
+  try{
+    const pt=document.getElementById('pt'+ch).value;
+    await post('/api/thermal',{ch:ch,probe_type:pt});
+    cfgBuilt=false;
+    await updateData();
+    toast('CH'+(ch+1)+' 已切换为'+(pt==='1'?' 2mm 陶瓷管':' 0.5mm 不锈钢管'));
+  }catch(e){toast('切换失败: '+e.message,'err');}
 }
 async function saveRatios(ch){
   try{

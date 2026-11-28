@@ -26,17 +26,47 @@
 // 板内状态 LED（载板 GPIO19，低电平点亮）
 #define PIN_LED_STAT        19
 
-// -------- 热式传感时序与算法参数（适配 OD10×ID6 壁厚 2mm 99刚玉盲管） --------
-#define THERMAL_CONV_TIME_MS    800UL   // 18B20 12位转换等待时间 (规格书 750ms)
-#define THERMAL_HEAT_PRE_MS     9200UL  // 加热至 9.2s 启动 T1 转换, 10.0s 读完关断 (~15J)
-#define THERMAL_SLOT_TOTAL_MS   15000UL // 单通道时间片 15s (3路完整周期 = 45s < 60s)
-#define THERMAL_CAL_SAMPLES     3       // 空管一键标定连续采样轮数
+// ESP32 开发板板载 LED（GPIO2，高电平点亮：未连网灭，WiFi 慢闪 2s，MQTT 快闪 1s）
+#define PIN_LED_ONBOARD     2
+
+// -------- 探头封装类型（支持三路混合使用：2路不锈钢 + 1路陶瓷） --------
+enum ProbeType : uint8_t {
+    PROBE_STEEL   = 0, // 0.5mm 薄壁不锈钢管：10s 加热，frac(0→10/30s)
+    PROBE_CERAMIC = 1  // 2.0mm 厚壁99刚玉陶瓷管：30s 加热，tail(10→30/60s)
+};
+
+// 出厂默认各通道封装类型（CH1/CH2 不锈钢，CH3 陶瓷，可在 Web 页面按通道随时切换）
+#define DEFAULT_PROBE_TYPE_0    PROBE_STEEL
+#define DEFAULT_PROBE_TYPE_1    PROBE_STEEL
+#define DEFAULT_PROBE_TYPE_2    PROBE_CERAMIC
+
+// -------- 热式传感时序与算法参数（按封装类型自适应） --------
+#define THERMAL_SAMPLE_MS       1000UL  // 18B20 1Hz 非阻塞实时采样周期 (>750ms 12位转换)
+#define THERMAL_PEAK_WINDOW_MS  5000UL  // 断电后峰值追踪窗口 5s (覆盖 2~3s 热传导滞后)
+#define THERMAL_MIN_DROP_C      0.30f   // 冷却窗口最小有效降温幅度，防除零/异常扰动
+#define THERMAL_CAL_SAMPLES     3       // 可选空管自动调参连续采样轮数
 #define THERMAL_DEBOUNCE_COUNT  1       // 状态切换确认轮数
 #define THERMAL_WDT_TIMEOUT_S   20      // 硬件看门狗 20 秒防干烧
 
-// 默认每通道迟滞判定比例（支持按通道独立配置）
-#define DEFAULT_RATIO_LIQUID    0.45f   // ΔT < 45% 空管温升 → 判有液
-#define DEFAULT_RATIO_EMPTY     0.60f   // ΔT > 60% 空管温升 → 判空管
+// 0.5mm 不锈钢管参数（实测：空气 36~42%，静水 58~63%）
+#define STEEL_HEAT_TIME_MS      10000UL // 10s 加热 (~15J)
+#define STEEL_COOL_SKIP_MS      0UL     // 从峰值起算
+#define STEEL_COOL_MID_MS       10000UL // 峰值后 10s
+#define STEEL_COOL_END_MS       30000UL // 峰值后 30s
+#define STEEL_RATIO_LIQUID      0.52f   // frac > 52% → 判有液
+#define STEEL_RATIO_EMPTY       0.46f   // frac < 46% → 判空管
+
+// 2.0mm 陶瓷管参数（实测：空气 ~66%，静水 ~82%，跳过前 10s 厚壁自身吸热）
+#define CERAMIC_HEAT_TIME_MS    30000UL // 30s 加热 (~45J)
+#define CERAMIC_COOL_SKIP_MS    10000UL // 跳过峰值后前 10s
+#define CERAMIC_COOL_MID_MS     30000UL // 峰值后 30s
+#define CERAMIC_COOL_END_MS     60000UL // 峰值后 60s
+#define CERAMIC_RATIO_LIQUID    0.75f   // tail(10→30/60s) > 75% → 判有液
+#define CERAMIC_RATIO_EMPTY     0.70f   // tail(10→30/60s) < 70% → 判空管
+
+// 兼容旧宏别名（默认指向不锈钢参数）
+#define DEFAULT_RATIO_LIQUID    STEEL_RATIO_LIQUID
+#define DEFAULT_RATIO_EMPTY     STEEL_RATIO_EMPTY
 
 // -------- 采样与广播发送定时周期 (1 Hz，与 water_sensor_hx711 一致) --------
 #define SEND_INTERVAL_MS        1000UL
